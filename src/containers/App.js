@@ -1,59 +1,51 @@
-import React, { Component } from 'react';
-import CardList from '../components/CardList';
-//import { robots } from './robots'; 
-import SearchBox from '../components/SearchBox';
-import './App.css';
-import { robots } from '../robots';
-import Scroll from '../components/Scroll';
+import React, { useState, useEffect } from "react";
+import CardList from "../components/CardList";
+//import { robots } from './robots';
+import SearchBox from "../components/SearchBox";
+import "./App.css";
+import Scroll from "../components/Scroll";
 
+function App() {
+  const [robots, setRobots] = useState([]);
+  const [searchfield, setSearchfield] = useState("");
+  const [count, setCount] = useState(0);
 
-class App extends React.Component {
-    constructor(){
-        super()
-        this.state = {
-            robots: [],
-            searchfield: '' //empty string
-        }
-    }
+  const onSearchChange = (event) => {
+    setSearchfield(event.target.value);
+  };
 
-    componentDidMount(){
-        fetch('https://jsonplaceholder.typicode.com/users')
-        .then(response => response.json())
-        .then(users => this.setState({ robots: users}));
-    }
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((response) => response.json())
+      .then((users) => setRobots(users));
+      console.log(count);
+  }, [count]);
+  // [] => kind like a shortcut for compound did mount.
+  // only runs if counts changes.
 
-    onSearchChange = (event) => {
-        this.setState({ searchfield: event.target.value })
-        /*const filterRobots = this.state.robots.filter(robots => {
-            return robots.name.toLocaleLowerCase().includes(this.state.searchfield.toLocaleLowerCase());
-        })*///the value of this is not referring to the app. Because of the event in the input (searchB),
-        //the value of this is all the input, and the input doesnt have the state.robots.
-        
-        //console.log(event.target.value); //to know the difference when you type. 
-        //we have the searchbox onchange to see an event that calls this function, the parent
-    }//everythime a change happen we get an event
+  const filterRobots = robots.filter((robot) => {
+    return robot.name
+      .toLocaleLowerCase()
+      .includes(searchfield.toLocaleLowerCase());
+  });
+  if (robots.lenght === 0) {
+    //or !robots.lenght which would be false..
+    return <h1>Loading..</h1>;
+  } else {
+    return (
+      <div className="tc">
+        <h1 className="f1">RoboFriends</h1>
+        <button onClick={()=>setCount(count+1)}>Click Me!</button>
+        <SearchBox searchChange={onSearchChange} />
+        <Scroll>
+          <CardList robots={filterRobots} />
+        </Scroll>
+      </div>
+    );
+  }
+}
 
-    render () {
-        const { robots, searchfield } = this.state;
-        const filterRobots = robots.filter(robot => {
-            return robot.name.toLocaleLowerCase().includes(searchfield.toLocaleLowerCase());
-        })
-        if (robots.lenght === 0) {//or !robots.lenght which would be false..
-            return <h1>Loading..</h1>
-        } else{
-        return(
-            <div className="tc">
-                <h1 className="f1">RoboFriends</h1>
-                <SearchBox searchChange={this.onSearchChange}/>
-                <Scroll>
-                    <CardList robots={filterRobots} />
-                </Scroll>
-            </div>
-            );
-        }
-    }
-} 
-//search box must communicate with cardlist to search. In the one flow diagram, 
+//search box must communicate with cardlist to search. In the one flow diagram,
 //one need to send information to the parent to tell the other what to do.
 
 export default App;

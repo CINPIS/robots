@@ -7,7 +7,6 @@ import './index.css'; //this is a new syntax: add css for each different compone
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker'; //allows to work feaster and offline
 import 'tachyons';
-import { robots } from './robots'; //as this is not default export in robots, it must be destructured
 //like { robot }. In other words, it has multiple exports.
 
 ReactDOM.render(
